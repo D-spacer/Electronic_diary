@@ -3,7 +3,7 @@ from datacenter.models import Mark
 from datacenter.models import Chastisement
 from datacenter.models import Commendation
 from datacenter.models import Lesson
-from django.core.exceptions import MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned, DoesNotExist
 import random
 
 COMMENDATIONS = ['Молодец!', 'Отлично!', 'Хорошо!', 'Гораздо лучше, чем я ожидал!', 'Приятно удивил!',
@@ -32,9 +32,11 @@ def create_commendation(name, subject):
 
 def main():
     try:
-        student = Schoolkid.objects.filter(full_name__contains='Фролов Иван').first()
+        student = Schoolkid.objects.get(full_name__contains='Фролов Иван')
     except Schoolkid.MultipleObjectsReturned:
         raise MultipleObjectsReturned('Найдено несколько учеников, уточните ФИО')
+    except Schoolkid.DoesNotExist:
+        raise DoesNotExist('Нет учеников с таким именем')
     subject = input('Укажите предмет, где вы хотите оставить положительный комментарий')
     fix_marks(student)
     remove_chastisements(student)
